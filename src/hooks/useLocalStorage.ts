@@ -1,10 +1,22 @@
 import { useState } from "react";
 
-export function useLocalStorage<T>(clave: string, valorInicial: T) {
+export function useLocalStorage<T>(
+  clave: string,
+  valorInicial: T,
+  esValido?: (valor: unknown) => valor is T,
+) {
   const [valor, setValor] = useState<T>(() => {
     try {
       const guardado = localStorage.getItem(clave);
-      return guardado ? (JSON.parse(guardado) as T) : valorInicial;
+      if (!guardado) return valorInicial;
+
+      const parseado: unknown = JSON.parse(guardado);
+
+      if (esValido && !esValido(parseado)) {
+        return valorInicial;
+      }
+
+      return parseado as T;
     } catch {
       return valorInicial;
     }
