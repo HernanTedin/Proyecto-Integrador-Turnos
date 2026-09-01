@@ -11,16 +11,15 @@ atendido).
 
 ## Cómo instalar y ejecutar
 
-\`\`\`bash
 pnpm install
 pnpm dev       # levanta el servidor de desarrollo
 pnpm build     # build de producción + chequeo de tipos
 pnpm lint      # linter
-\`\`\`
+
 
 ## Estructura de carpetas
 
-\`\`\`
+
 src/
 ├─ types/         modelo de dominio (Turno, EstadoTurno)
 ├─ data/          datos semilla (28 turnos)
@@ -32,7 +31,7 @@ src/
    ├─ formulario/  alta y modificación (mismo componente, dos modos)
    ├─ consulta/    vista de solo lectura
    └─ ui/          diálogo de confirmación, aviso de éxito
-\`\`\`
+
 
 ## Decisiones de diseño
 Para guardar los turnos usé localStorage, así no se pierden si recargo
