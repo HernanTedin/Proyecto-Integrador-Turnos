@@ -1,75 +1,60 @@
-# React + TypeScript + Vite
+# Panel de Gestión de Turnos
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Trabajo Práctico Integrador — Arquitectura y Diseño de Interfaces
+Tecnicatura Superior en Desarrollo de Software
 
-Currently, two official plugins are available:
+## Dominio elegido
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Turnos de consultorio. Cada turno tiene: paciente, profesional, especialidad,
+fecha y hora, duración en minutos, y estado (pendiente, confirmado, cancelado,
+atendido).
 
-## React Compiler
+## Cómo instalar y ejecutar
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+\`\`\`bash
+pnpm install
+pnpm dev       # levanta el servidor de desarrollo
+pnpm build     # build de producción + chequeo de tipos
+pnpm lint      # linter
+\`\`\`
 
-## Expanding the ESLint configuration
+## Estructura de carpetas
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+\`\`\`
+src/
+├─ types/         modelo de dominio (Turno, EstadoTurno)
+├─ data/          datos semilla (28 turnos)
+├─ lib/           validación, type guard
+├─ hooks/         useLocalStorage (genérico), useDebounce (genérico),
+│                 useTurnos (de dominio, construido sobre los anteriores)
+└─ components/
+   ├─ listado/     tabla con orden, búsqueda y paginación
+   ├─ formulario/  alta y modificación (mismo componente, dos modos)
+   ├─ consulta/    vista de solo lectura
+   └─ ui/          diálogo de confirmación, aviso de éxito
+\`\`\`
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Decisiones de diseño
+Para guardar los turnos usé localStorage, así no se pierden si recargo
+  la página. Si por algún motivo lo que hay guardado está roto o alguien
+  lo edita a mano, la app no explota: valida los datos antes de usarlos
+  y si algo no cierra, vuelve a los datos de ejemplo con los que arranca
+  el proyecto.
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+   Armé dos hooks separados: uno genérico (useLocalStorage) que no sabe
+  nada de turnos, solo guarda y lee cosas del navegador. Y otro
+  (useTurnos) que sí conoce el dominio y usa el primero por debajo.
+  Los separé así para que useLocalStorage se pueda reusar para
+  cualquier otra cosa en el futuro, sin depender de turnos.
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+ 
 
-```
+ ## Limitaciones conocidas 
+ Cuando editás un turno desde la tabla, hay que
+  scrollear manualmente hacia arriba para ver los datos cargados
 
-You can also install [eslint-plugin-react-x](https://npmx.dev/package/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://npmx.dev/package/eslint-plugin-react-dom) for React-specific lint rules:
+## Uso de asistentes de IA
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
-```
+Usé Claude como asistente durante el desarrollo, principalmente para:
+explicar conceptos de React que no conocía como debounce y type guards",revisar la
+implementación de accesibilidad, resolver errores puntuales.
